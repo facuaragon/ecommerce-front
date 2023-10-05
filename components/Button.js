@@ -8,7 +8,8 @@ export const ButtonStyle = css`
   display: inline-flex;
   align-items: center;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
   svg {
     height: 16px;
     margin-right: 5px;
@@ -27,6 +28,22 @@ export const ButtonStyle = css`
       background-color: transparent;
       color: #fff;
       border: 1px solid #fff;
+    `}
+
+${(props) =>
+    props.black &&
+    !props.outlined &&
+    css`
+      background-color: #000;
+      color: #fff;
+    `}
+  ${(props) =>
+    props.black &&
+    props.outlined &&
+    css`
+      background-color: transparent;
+      color: #000;
+      border: 1px solid #000;
     `}
   ${(props) =>
     props.primary &&
@@ -55,6 +72,12 @@ export const ButtonStyle = css`
         height: 20px;
       }
     `};
+  ${(props) =>
+    props.block &&
+    css`
+      display: block;
+      width: 100%;
+    `}
 `;
 const StyledButton = styled.button`
   ${ButtonStyle}
