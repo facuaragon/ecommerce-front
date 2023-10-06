@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Loader from "../Loader/Loader";
 import styles from "./styles.module.css";
 import axios from "axios";
@@ -6,7 +6,12 @@ import axios from "axios";
 export default function MercadoPagoButton({ products }) {
   const [url, setUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isInitialRender = useRef(true);
   useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
     const generateLink = async () => {
       setLoading(true);
       try {
@@ -24,9 +29,9 @@ export default function MercadoPagoButton({ products }) {
       }
       setLoading(false);
     };
+
     generateLink();
-    // console.log(products);
-  }, [products]);
+  }, []);
   return (
     <div>
       {loading ? (

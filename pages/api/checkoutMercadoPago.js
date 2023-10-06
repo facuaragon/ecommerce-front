@@ -9,13 +9,14 @@ mercadopago.configure({
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
+    // console.log(req.body.products);
     const {
-      // name,
-      // email,
-      // postalCode,
-      // streetAddress,
-      // country,
-      // city,
+      name,
+      email,
+      postalCode,
+      streetAddress,
+      country,
+      city,
       cartProducts,
     } = req.body.products;
     let productsIds;
@@ -42,33 +43,35 @@ export default async function handler(req, res) {
           });
         }
       }
-      // const orderDoc = await Order.create({
-      //   line_items,
-      //   name,
-      //   city,
-      //   email,
-      //   postalCode,
-      //   streetAddress,
-      //   country,
-      //   paid: false,
-      // });
+      const orderDoc = await Order.create({
+        line_items,
+        name,
+        city,
+        email,
+        postalCode,
+        streetAddress,
+        country,
+        paid: false,
+      });
       // console.log("ItemsMP", line_items);
+      console.log("orderId: ", orderDoc._id.toString());
+      console.log("hola");
       const preference = {
         items: line_items,
-        // payer: {
-        //   name: name,
-        //   email: email,
-        //   address: {
-        //     country: country,
-        //     city: city,
-        //     street_name: streetAddress,
-        //     zip_code: postalCode,
-        //   },
-        // },
-        // metadata: { orderId: orderDoc._id.toString() },
+        payer: {
+          name: name,
+          email: email,
+          address: {
+            country: country,
+            city: city,
+            street_name: streetAddress,
+            zip_code: postalCode,
+          },
+        },
+        metadata: { orderId: orderDoc._id.toString() },
         back_urls: {
-          success: `${process.env.PUBLIC_URL}`,
-          failure: `${process.env.PUBLIC_URL}`,
+          success: `${process.env.PUBLIC_URL}/cart`,
+          failure: `${process.env.PUBLIC_URL}/cart`,
         },
         payment_methods: {
           excluded_payment_types: [

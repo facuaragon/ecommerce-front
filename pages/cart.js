@@ -20,6 +20,7 @@ const Box = styled.div`
   background-color: #fff;
   border-radius: 10px;
   padding: 30px;
+  position: relative;
 `;
 
 const ProductInfoCell = styled.td`
@@ -48,6 +49,14 @@ const CityHolder = styled.div`
   display: flex;
   gap: 5px;
 `;
+
+const Icon = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+`;
 export default function CartPage() {
   const router = useRouter();
 
@@ -60,6 +69,8 @@ export default function CartPage() {
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [country, setCountry] = useState("");
+
+  const [checkout, setCheckout] = useState(false);
   useEffect(() => {
     if (cartProducts.length > 0) {
       axios.post("/api/cart", { ids: cartProducts }).then((response) => {
@@ -71,10 +82,12 @@ export default function CartPage() {
   }, [cartProducts]);
 
   useEffect(() => {
-    if (router.query?.success) {
+    console.log(router.query);
+    if (router.query?.status === "approved") {
       clearCart();
     }
   }, [router]);
+
   const moreOfThisProduct = (id) => {
     addProduct(id);
   };
@@ -84,7 +97,7 @@ export default function CartPage() {
   };
 
   const goToPayment = async () => {
-    const res = await axios.post("/api/checkoutMercadoPago", {
+    const res = await axios.post("/api/checkout", {
       name,
       email,
       postalCode,
@@ -97,6 +110,12 @@ export default function CartPage() {
       window.location = res.data.url;
     }
   };
+  const goToCart = () => {
+    router.push("/cart");
+  };
+  const goToHome = () => {
+    router.push("/");
+  };
 
   //! Total Price
   let total = 0;
@@ -105,7 +124,7 @@ export default function CartPage() {
     total += price;
   }
   //! If redirected from stripe
-  if (router.query?.success) {
+  if (router.query?.status === "approved") {
     // console.log(router.query?.success);
     return (
       <>
@@ -115,6 +134,26 @@ export default function CartPage() {
             <Box>
               <h1>Thanks for your order!</h1>
               <p>We will email you when your order will be sent</p>
+              <Button block={1} black={1} onClick={goToHome}>
+                Back to Home
+              </Button>
+            </Box>
+          </ColumnsWrapper>
+        </Center>
+      </>
+    );
+  } else if (router.query?.status === "failure") {
+    return (
+      <>
+        <Header />
+        <Center>
+          <ColumnsWrapper>
+            <Box>
+              <h1>There was an error with the payment</h1>
+              <p>Please try again</p>
+              <Button block={1} black={1} onClick={goToCart}>
+                Back to Cart
+              </Button>
             </Box>
           </ColumnsWrapper>
         </Center>
@@ -148,18 +187,26 @@ export default function CartPage() {
                         {product.title}
                       </ProductInfoCell>
                       <td>
-                        <Button onClick={() => lessOfThisProduct(product._id)}>
-                          -
-                        </Button>
+                        {!checkout && (
+                          <Button
+                            onClick={() => lessOfThisProduct(product._id)}
+                          >
+                            -
+                          </Button>
+                        )}
                         <QuantityLabel>
                           {
                             cartProducts.filter((id) => id === product._id)
                               .length
                           }
                         </QuantityLabel>
-                        <Button onClick={() => moreOfThisProduct(product._id)}>
-                          +
-                        </Button>
+                        {!checkout && (
+                          <Button
+                            onClick={() => moreOfThisProduct(product._id)}
+                          >
+                            +
+                          </Button>
+                        )}
                       </td>
                       <td>
                         ${" "}
@@ -180,13 +227,32 @@ export default function CartPage() {
           </Box>
           {!!cartProducts.length && (
             <Box>
-              <h2>Order Information</h2>
+              {checkout && (
+                <Icon onClick={() => setCheckout(false)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                    />
+                  </svg>
+                </Icon>
+              )}
+              <h2 style={{ position: "relative" }}>Order Information</h2>
               <Input
                 type="text"
                 placeholder="Name"
                 value={name}
                 name="name"
                 onChange={(e) => setName(e.target.value)}
+                disabled={checkout}
               />
               <Input
                 type="text"
@@ -194,6 +260,7 @@ export default function CartPage() {
                 value={email}
                 name="email"
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={checkout}
               />
               <CityHolder>
                 <Input
@@ -202,6 +269,7 @@ export default function CartPage() {
                   value={city}
                   name="city"
                   onChange={(e) => setCity(e.target.value)}
+                  disabled={checkout}
                 />
                 <Input
                   type="text"
@@ -209,6 +277,7 @@ export default function CartPage() {
                   value={postalCode}
                   name="postalCode"
                   onChange={(e) => setPostalCode(e.target.value)}
+                  disabled={checkout}
                 />
               </CityHolder>
               <Input
@@ -217,6 +286,7 @@ export default function CartPage() {
                 value={streetAddress}
                 name="streetAddress"
                 onChange={(e) => setStreetAddress(e.target.value)}
+                disabled={checkout}
               />
               <Input
                 type="text"
@@ -224,22 +294,45 @@ export default function CartPage() {
                 value={country}
                 name="country"
                 onChange={(e) => setCountry(e.target.value)}
+                disabled={checkout}
               />
               <input type="hidden" name="products" />
               {/* <Button block={1} black={1} onClick={goToPayment}>
                 Continue to Payment
               </Button> */}
-              <MercadoPagoButton
-                products={{
-                  // name,
-                  // email,
-                  // postalCode,
-                  // streetAddress,
-                  // country,
-                  // city,
-                  cartProducts,
-                }}
-              />
+              {!checkout ? (
+                <Button
+                  black={1}
+                  block={1}
+                  checkout={1}
+                  disabled={
+                    !(
+                      name &&
+                      email &&
+                      city &&
+                      postalCode &&
+                      streetAddress &&
+                      country
+                    )
+                  }
+                  onClick={() => setCheckout(true)}
+                >
+                  Continuar
+                </Button>
+              ) : (
+                <MercadoPagoButton
+                  products={{
+                    name,
+                    email,
+                    postalCode,
+                    streetAddress,
+                    country,
+                    city,
+                    cartProducts,
+                  }}
+                  checkout={checkout}
+                />
+              )}
             </Box>
           )}
         </ColumnsWrapper>

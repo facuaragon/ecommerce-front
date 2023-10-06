@@ -2,7 +2,6 @@
     width: 100%;
     text-decoration: none;
     background-color: #3483fa;
-
     height: 30px;
     border-radius: .5rem;
     border: none;
@@ -15,6 +14,7 @@
     justify-content: center;
     gap: 1rem;
     transition-duration: 0.3s;
+    margin: 30px auto 0;
 }
 .button:hover{
     transform: scale(1.1);

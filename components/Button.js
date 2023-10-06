@@ -78,6 +78,19 @@ ${(props) =>
       display: block;
       width: 100%;
     `}
+  ${(props) =>
+    props.checkout &&
+    css`
+      margin-top: 30px;
+      height: 30px;
+      width: 100%;
+    `}
+    ${(props) =>
+    props.disabled &&
+    css`
+      background-color: #cccc;
+      cursor: not-allowed;
+    `}
 `;
 const StyledButton = styled.button`
   ${ButtonStyle}
