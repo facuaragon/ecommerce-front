@@ -1,0 +1,21 @@
+.button{
+    width: 100%;
+    text-decoration: none;
+    background-color: #3483fa;
+
+    height: 30px;
+    border-radius: .5rem;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    transition-duration: 0.3s;
+}
+.button:hover{
+    transform: scale(1.1);
+}

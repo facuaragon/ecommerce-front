@@ -7,6 +7,8 @@ import Table from "@/components/Table";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useRouter } from "next/router";
+import MercadoPagoButton from "@/components/MercadoPagoButton/MercadoPagoButton";
 
 const ColumnsWrapper = styled.div`
   display: grid;
@@ -47,14 +49,17 @@ const CityHolder = styled.div`
   gap: 5px;
 `;
 export default function CartPage() {
-  const { cartProducts, addProduct, removeProduct } = useContext(CartContext);
+  const router = useRouter();
+
+  const { cartProducts, addProduct, removeProduct, clearCart } =
+    useContext(CartContext);
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
-  const [Country, setCountry] = useState("");
+  const [country, setCountry] = useState("");
   useEffect(() => {
     if (cartProducts.length > 0) {
       axios.post("/api/cart", { ids: cartProducts }).then((response) => {
@@ -64,17 +69,57 @@ export default function CartPage() {
       setProducts([]);
     }
   }, [cartProducts]);
+
+  useEffect(() => {
+    if (router.query?.success) {
+      clearCart();
+    }
+  }, [router]);
   const moreOfThisProduct = (id) => {
     addProduct(id);
   };
   const lessOfThisProduct = (id) => {
     removeProduct(id);
-    console.log(products.length);
+    // console.log(products.length);
   };
+
+  const goToPayment = async () => {
+    const res = await axios.post("/api/checkoutMercadoPago", {
+      name,
+      email,
+      postalCode,
+      streetAddress,
+      country,
+      city,
+      cartProducts,
+    });
+    if (res.data.url) {
+      window.location = res.data.url;
+    }
+  };
+
+  //! Total Price
   let total = 0;
   for (const productId of cartProducts) {
     const price = products.find((p) => p._id === productId)?.price || 0;
     total += price;
+  }
+  //! If redirected from stripe
+  if (router.query?.success) {
+    // console.log(router.query?.success);
+    return (
+      <>
+        <Header />
+        <Center>
+          <ColumnsWrapper>
+            <Box>
+              <h1>Thanks for your order!</h1>
+              <p>We will email you when your order will be sent</p>
+            </Box>
+          </ColumnsWrapper>
+        </Center>
+      </>
+    );
   }
   return (
     <>
@@ -136,60 +181,65 @@ export default function CartPage() {
           {!!cartProducts.length && (
             <Box>
               <h2>Order Information</h2>
-              <form method="post" action="/api/checkout">
+              <Input
+                type="text"
+                placeholder="Name"
+                value={name}
+                name="name"
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Email"
+                value={email}
+                name="email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <CityHolder>
                 <Input
                   type="text"
-                  placeholder="Name"
-                  value={name}
-                  name="name"
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Email"
-                  value={email}
-                  name="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <CityHolder>
-                  <Input
-                    type="text"
-                    placeholder="City"
-                    value={city}
-                    name="city"
-                    onChange={(e) => setCity(e.target.value)}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Postal Code"
-                    value={postalCode}
-                    name="postalCode"
-                    onChange={(e) => setPostalCode(e.target.value)}
-                  />
-                </CityHolder>
-                <Input
-                  type="text"
-                  placeholder="Street Address"
-                  value={streetAddress}
-                  name="streetAddress"
-                  onChange={(e) => setStreetAddress(e.target.value)}
+                  placeholder="City"
+                  value={city}
+                  name="city"
+                  onChange={(e) => setCity(e.target.value)}
                 />
                 <Input
                   type="text"
-                  placeholder="Country"
-                  value={Country}
-                  name="country"
-                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="Postal Code"
+                  value={postalCode}
+                  name="postalCode"
+                  onChange={(e) => setPostalCode(e.target.value)}
                 />
-                <input
-                  type="hidden"
-                  name="products"
-                  value={cartProducts.join(",")}
-                />
-                <Button block={1} black={1} type="submit">
-                  Continue to Payment
-                </Button>
-              </form>
+              </CityHolder>
+              <Input
+                type="text"
+                placeholder="Street Address"
+                value={streetAddress}
+                name="streetAddress"
+                onChange={(e) => setStreetAddress(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Country"
+                value={country}
+                name="country"
+                onChange={(e) => setCountry(e.target.value)}
+              />
+              <input type="hidden" name="products" />
+              {/* <Button block={1} black={1} onClick={goToPayment}>
+                Continue to Payment
+              </Button> */}
+              <MercadoPagoButton
+                products={{
+                  // name,
+                  // email,
+                  // postalCode,
+                  // streetAddress,
+                  // country,
+                  // city,
+                  cartProducts,
+                }}
+              />
             </Box>
           )}
         </ColumnsWrapper>

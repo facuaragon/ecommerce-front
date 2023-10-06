@@ -5,7 +5,7 @@ import { mongooseConnect } from "@/lib/mongoose";
 import { Product } from "@/models/Product";
 
 export default function Home({ featuredProduct, newProducts }) {
-  console.log(newProducts);
+  // console.log(newProducts);
   return (
     <>
       <Header />
