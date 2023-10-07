@@ -91,6 +91,7 @@ export default function CartPage() {
   const moreOfThisProduct = (id) => {
     addProduct(id);
   };
+
   const lessOfThisProduct = (id) => {
     removeProduct(id);
     // console.log(products.length);
