@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       });
       // console.log("ItemsMP", line_items);
       console.log("orderId: ", orderDoc._id.toString());
-      console.log("hola");
+
       const preference = {
         items: line_items,
         payer: {
