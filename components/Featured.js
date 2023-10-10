@@ -55,7 +55,7 @@ export default function Featured({ product }) {
                 <Desc>{product.description}</Desc>
                 <ButtonsWrapper>
                   <ButtonLink
-                    href={"/products" + product._id}
+                    href={"/product/" + product._id}
                     outlined={1}
                     white={1}
                   >
@@ -69,7 +69,7 @@ export default function Featured({ product }) {
               </div>
             </Column>
             <Column>
-              <img src={product.images[0]} alt={product.title} />
+              <img src={product.images?.[0]} alt={product.title} />
             </Column>
           </ColumnsWrapper>
         </Center>
