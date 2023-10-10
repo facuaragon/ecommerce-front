@@ -32,16 +32,25 @@ const Title = styled(Link)`
 `;
 
 const PriceRow = styled.div`
-  display: flex;
+  display: block;
   width: 100%;
   justify-content: space-between;
   align-items: center;
   margin-top: 2px;
+  @media screen and (min-width: 768px) {
+    display: flex;
+    gap: 10px;
+  }
 `;
 
 const Price = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
+  text-align: right;
+  @media screen and (min-width: 768px) {
+    font-size: 1.2rem;
+    text-align: left;
+  }
 `;
 
 export default function ProductBox({ _id, title, description, price, images }) {
@@ -62,7 +71,12 @@ export default function ProductBox({ _id, title, description, price, images }) {
           <Title href={url}>{title}</Title>
           <PriceRow>
             <Price>${price}</Price>
-            <Button primary={1} outlined={1} onClick={addNewProductToCart}>
+            <Button
+              block={1}
+              primary={1}
+              outlined={1}
+              onClick={addNewProductToCart}
+            >
               Add to cart
             </Button>
           </PriceRow>

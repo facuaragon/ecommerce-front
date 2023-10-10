@@ -16,6 +16,7 @@ const Image = styled.img`
 
 const ImageButtons = styled.div`
   display: flex;
+  justify-content: center;
   gap: 10px;
   margin-top: 10px;
 `;

@@ -12,9 +12,12 @@ import MercadoPagoButton from "@/components/MercadoPagoButton/MercadoPagoButton"
 
 const ColumnsWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1.3fr 0.7fr;
+  grid-template-columns: 1;
   gap: 40px;
   margin-top: 40px;
+  @media screen and (min-width: 768px) {
+    grid-template-columns: 1.3fr 0.7fr;
+  }
 `;
 const Box = styled.div`
   background-color: #fff;
@@ -28,21 +31,37 @@ const ProductInfoCell = styled.td`
 `;
 
 const ProductImageBox = styled.div`
-  width: 100px;
-  height: 100px;
-  padding: 10px;
+  width: 70px;
+  height: 70px;
+  /* padding: 10px; */
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   img {
-    max-width: 80px;
-    max-height: 80px;
+    max-width: 50px;
+    max-height: 50px;
+  }
+  @media screen and (min-width: 768px) {
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    img {
+      max-width: 80px;
+      max-height: 80px;
+    }
   }
 `;
 const QuantityLabel = styled.span`
-  padding: 0 5px;
+  padding: 5px 15px;
+  display: block;
+
+  @media screen and (min-width: 768px) {
+    padding: 0 10px;
+
+    display: inline-block;
+  }
 `;
 
 const CityHolder = styled.div`
